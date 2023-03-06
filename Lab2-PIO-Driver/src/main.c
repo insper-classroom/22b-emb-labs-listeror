@@ -222,14 +222,29 @@ void _pio_set_output(Pio *p_pio, const uint32_t ul_mask,
 	}
 }
 
+
+/**
+ * \brief Return 1 if one or more PIOs of the given Pin instance currently have
+ * a high level; otherwise returns 0. This method returns the actual value that
+ * is being read on the pin. To return the supposed output value of a pin, use
+ * pio_get_output_data_status() instead.
+ *
+ * \param p_pio Pointer to a PIO instance.
+ * \param ul_type PIO type.
+ * \param ul_mask Bitmask of one or more pin(s) to configure.
+ *
+ * \retval 1 at least one PIO currently has a high level.
+ * \retval 0 all PIOs have a low level.
+ */
+
 uint32_t _pio_get(Pio *p_pio, const pio_type_t ul_type,
 const uint32_t ul_mask)
 {
 	uint32_t statusRegister;
-	if (ul_type == PIO_OUTPUT_0) {
-		statusRegister = p_pio->PIO_ODSR;
+	if (ul_type == PIO_OUTPUT_0) {		  // PIO_INPUT: quando for para ler uma entrada / PIO_OUTPUT_0: quando for para ler uma saida
+		statusRegister = p_pio->PIO_ODSR; // Output Data Status Register (PIO_ODSR)
 		} else {
-		statusRegister = p_pio->PIO_PDSR;
+		statusRegister = p_pio->PIO_PDSR; // Pin Data Status Register (PIO_PDSR)
 	}
 	if(ul_mask & statusRegister){
 		return 1;
@@ -239,7 +254,7 @@ const uint32_t ul_mask)
 }
 
 void _delay_ms(int n){
-	for(int i = 0; i<(500*n*1000); i++){
+	for(int i = 0; i<(300*n*1000); i++){
 		asm("NOP");
 	}
 }

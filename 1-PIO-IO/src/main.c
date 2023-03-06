@@ -27,7 +27,6 @@
 
 
 #define LED_PIO           PIOC                 // periferico que controla o LED
-// # (1)
 #define LED_PIO_ID        ID_PIOC                  // ID do periférico PIOC (controla LED)
 #define LED_PIO_IDX       8                    // ID do LED no PIO
 #define LED_PIO_IDX_MASK  (1 << LED_PIO_IDX)   // Mascara para CONTROLARMOS o LED
@@ -112,7 +111,8 @@ void init(void){
 	// Desativa watchdog
 	WDT->WDT_MR = WDT_MR_WDDIS;
 
-	// Ativa PIOs
+	// Ativa o PIO na qual o LED foi conectado
+	// para que possamos controlar o LED.
 	// LED E BOTÃO DA PLACA
 	pmc_enable_periph_clk(LED_PIO_ID);
 	pmc_enable_periph_clk(BUT_PIO_ID);
@@ -128,10 +128,17 @@ void init(void){
 	// LED 3 E BOTÃO 3 DO OLED
 	pmc_enable_periph_clk(LED3_PIO_ID);
 	pmc_enable_periph_clk(BUT3_PIO_ID);
+	
+	
+	//Configura pino do LED para que seja possível aciona-lo:
+	pio_set_output(LED_PIO, LED_PIO_IDX_MASK, 0, 0, 0);
+	pio_set_input(BUT_PIO, BUT_PIO_IDX_MASK, PIO_DEFAULT);
+	pio_pull_up(BUT_PIO, BUT_PIO_IDX_MASK, 1);
+	
 
 	// Configura Pinos
-	pio_configure(LED_PIO, PIO_OUTPUT_0, LED_PIO_IDX_MASK, PIO_DEFAULT);
-	pio_configure(BUT_PIO, PIO_INPUT, BUT_PIO_IDX_MASK, PIO_PULLUP);
+	//pio_configure(LED_PIO, PIO_OUTPUT_0, LED_PIO_IDX_MASK, PIO_DEFAULT);
+	//pio_configure(BUT_PIO, PIO_INPUT, BUT_PIO_IDX_MASK, PIO_PULLUP);
 
 	pio_configure(LED1_PIO, PIO_OUTPUT_0, LED1_PIO_IDX_MASK, PIO_DEFAULT);
 	pio_configure(BUT1_PIO, PIO_INPUT, BUT1_PIO_IDX_MASK, PIO_PULLUP);
@@ -166,7 +173,7 @@ int main(void)
 			  delay_ms(100);                         // delay
 		  }
 		  } else  {
-		  // Ativa o pino LED_IDX (par apagar)
+		  // Ativa o pino LED_IDX (para apagar)
 		  pio_set(LED_PIO, LED_PIO_IDX_MASK);
 	  }
 	if(!pio_get(BUT1_PIO, PIO_INPUT, BUT1_PIO_IDX_MASK)) {
@@ -178,7 +185,7 @@ int main(void)
 			delay_ms(100);                         // delay
 		}
 		} else  {
-		// Ativa o pino LED_IDX (par apagar)
+		// Ativa o pino LED_IDX (para apagar)
 		pio_set(LED1_PIO, LED1_PIO_IDX_MASK);
 	}
 
@@ -191,7 +198,7 @@ int main(void)
 			delay_ms(100);                         // delay
 		}
 		} else  {
-		// Ativa o pino LED_IDX (par apagar)
+		// Ativa o pino LED_IDX (para apagar)
 		pio_set(LED2_PIO, LED2_PIO_IDX_MASK);
 	}
 	if(!pio_get(BUT3_PIO, PIO_INPUT, BUT3_PIO_IDX_MASK)) {
@@ -203,7 +210,7 @@ int main(void)
 			delay_ms(100);                         // delay
 		}
 		} else  {
-		// Ativa o pino LED_IDX (par apagar)
+		// Ativa o pino LED_IDX (para apagar)
 		pio_set(LED3_PIO, LED3_PIO_IDX_MASK);
 	}
   }
